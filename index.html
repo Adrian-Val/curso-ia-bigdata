@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curso: Inteligencia Artificial & Big Data</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080C14;
+    --surface: #0D1220;
+    --surface2: #111827;
+    --border: rgba(255,255,255,0.07);
+    --text: #E8E3DC;
+    --muted: #7A7A8C;
+    --accent1: #5B8AF0;
+    --accent2: #38D9A9;
+    --accent3: #F59E0B;
+    --accent4: #F06595;
+    --m1: #5B8AF0;
+    --m2: #38D9A9;
+    --m3: #F59E0B;
+    --m4: #A78BFA;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #2a3050; border-radius: 3px; }
+
+  /* LAYOUT */
+  .shell { display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 50;
+  }
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.3;
+  }
+  .sidebar-logo p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+  .progress-wrap { padding: 16px 24px; border-bottom: 1px solid var(--border); }
+  .progress-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 600; }
+  .progress-bar-bg { height: 4px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent1), var(--accent2)); border-radius: 2px; transition: width 0.5s ease; width: 0%; }
+  .progress-pct { font-size: 12px; color: var(--accent2); font-weight: 600; margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
+
+  .nav-module { padding: 12px 0; }
+  .nav-module-title {
+    padding: 8px 24px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 24px 9px 32px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--muted);
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    font-weight: 500;
+  }
+  .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .nav-item.active { color: var(--text); border-left-color: var(--accent1); background: rgba(91,138,240,0.08); }
+  .nav-item.done .nav-dot { background: var(--accent2); }
+  .nav-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .nav-item.active .nav-dot { background: var(--accent1); }
+
+  /* MAIN */
+  .main { flex: 1; overflow-y: auto; }
+  .topbar {
+    position: sticky;
+    top: 0;
+    background: rgba(8,12,20,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 40;
+  }
+  .breadcrumb { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .breadcrumb span { color: var(--text); }
+  .nav-btns { display: flex; gap: 10px; }
+  .btn {
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.05);
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent1), #7BA7FF);
+    border-color: transparent;
+    color: #fff;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-success {
+    background: linear-gradient(135deg, var(--accent2), #5EE8C5);
+    border-color: transparent;
+    color: #082018;
+  }
+
+  .content-area { padding: 48px 56px 80px; max-width: 860px; }
+
+  /* HOME */
+  .home-hero {
+    padding: 80px 56px 56px;
+    max-width: 900px;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 100px;
+    background: rgba(91,138,240,0.12);
+    border: 1px solid rgba(91,138,240,0.25);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent1);
+    margin-bottom: 28px;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+  }
+  .hero-title .g1 { color: var(--accent1); }
+  .hero-title .g2 { color: var(--accent2); }
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 580px;
+    line-height: 1.8;
+    margin-bottom: 48px;
+  }
+  .stats-row { display: flex; gap: 32px; margin-bottom: 56px; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-n { font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 700; color: var(--text); line-height: 1; }
+  .stat-l { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .module-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 48px; }
+  .module-card {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    background: var(--surface);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .module-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--mc, var(--accent1));
+  }
+  .module-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.15); }
+  .module-card .mc-icon { font-size: 36px; margin-bottom: 14px; }
+  .module-card .mc-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--mc, var(--accent1)); margin-bottom: 6px; }
+  .module-card .mc-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; font-family: 'Playfair Display', serif; }
+  .module-card .mc-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .mc-lessons { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+  .mc-pill { padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.06); color: var(--muted); }
+
+  /* SECTION CONTENT */
+  .sec-header { margin-bottom: 36px; }
+  .sec-module-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--mc, var(--accent1));
+    background: rgba(91,138,240,0.08);
+    border: 1px solid rgba(91,138,240,0.2);
+    padding: 5px 14px; border-radius: 100px; margin-bottom: 16px;
+  }
+  .sec-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .sec-subtitle { font-size: 17px; color: var(--muted); line-height: 1.7; max-width: 680px; }
+
+  /* TEXT CONTENT */
+  .prose { font-size: 16px; line-height: 1.85; color: #BDB8B0; margin-bottom: 28px; }
+  .prose strong { color: var(--text); font-weight: 600; }
+
+  .info-box {
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin: 24px 0;
+    border-left: 4px solid var(--accent1);
+    background: rgba(91,138,240,0.07);
+    font-size: 15px;
+    line-height: 1.75;
+    color: #C4C0D4;
+  }
+  .info-box.green { border-left-color: var(--accent2); background: rgba(56,217,169,0.07); }
+  .info-box.amber { border-left-color: var(--accent3); background: rgba(245,158,11,0.07); }
+  .info-box.pink { border-left-color: var(--accent4); background: rgba(240,101,149,0.07); }
+  .info-box .box-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent1); margin-bottom: 8px; }
+  .info-box.green .box-label { color: var(--accent2); }
+  .info-box.amber .box-label { color: var(--accent3); }
+  .info-box.pink .box-label { color: var(--accent4); }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin: 28px 0; }
+  .concept-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .concept-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-1px); }
+  .cc-icon { font-size: 32px; margin-bottom: 12px; }
+  .cc-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; }
+  .cc-body { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+  .big-number { text-align: center; padding: 28px; background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; margin: 8px 0; }
+  .big-number .bn { font-family: 'JetBrains Mono', monospace; font-size: 48px; font-weight: 700; color: var(--accent2); line-height: 1; }
+  .big-number .bl { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+  .numbers-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin: 28px 0; }
+
+  h3 { font-size: 22px; font-weight: 700; margin: 36px 0 14px; font-family: 'Playfair Display', serif; color: var(--text); }
+  h4 { font-size: 16px; font-weight: 700; margin: 24px 0 10px; color: var(--text); }
+
+  .divider { height: 1px; background: var(--border); margin: 36px 0; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; margin: 24px 0; border-radius: 12px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead { background: rgba(255,255,255,0.04); }
+  th { padding: 14px 18px; text-align: left; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); border-bottom: 1px solid var(--border); }
+  td { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #BDB8B0; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  td:first-child { color: var(--text); font-weight: 600; }
+
+  /* TIMELINE */
+  .timeline { margin: 28px 0; }
+  .tl-item { display: flex; gap: 20px; padding-bottom: 28px; position: relative; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-left { display: flex; flex-direction: column; align-items: center; }
+  .tl-dot { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--accent1); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .tl-line { flex: 1; width: 2px; background: var(--border); margin-top: 4px; }
+  .tl-item:last-child .tl-line { display: none; }
+  .tl-content { flex: 1; padding-top: 4px; }
+  .tl-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .tl-body { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+  /* CODE */
+  .code-block {
+    background: #0A0D14;
+    border: 1px solid rgba(91,138,240,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #CBD5E1;
+    overflow-x: auto;
+    margin: 20px 0;
+  }
+  .code-block .kw { color: #818CF8; }
+  .code-block .fn { color: #38BDF8; }
+  .code-block .str { color: #86EFAC; }
+  .code-block .cm { color: #475569; font-style: italic; }
+  .code-block .num { color: var(--accent3); }
+
+  /* QUIZ */
+  .quiz-wrap { padding: 8px 0; }
+  .quiz-intro { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 32px; text-align: center; margin-bottom: 28px; }
+  .qi-icon { font-size: 52px; margin-bottom: 16px; }
+  .qi-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; margin-bottom: 8px; }
+  .qi-sub { font-size: 15px; color: var(--muted); }
+
+  .question-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 20px; transition: border-color 0.3s; }
+  .question-card.correct { border-color: rgba(56,217,169,0.4); }
+  .question-card.incorrect { border-color: rgba(240,101,149,0.4); }
+  .q-num { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+  .q-text { font-size: 17px; font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+  .option-btn {
+    display: flex; align-items: flex-start; gap: 12px; width: 100%;
+    padding: 14px 18px; margin-bottom: 10px; border-radius: 10px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    color: var(--text); cursor: pointer;
+    font-size: 15px; font-family: 'DM Sans', sans-serif; font-weight: 400;
+    text-align: left; line-height: 1.5;
+    transition: all 0.15s;
+  }
+  .option-btn:hover:not(:disabled) { border-color: rgba(91,138,240,0.4); background: rgba(91,138,240,0.07); }
+  .option-btn.selected { border-color: var(--accent1); background: rgba(91,138,240,0.12); }
+  .option-btn.correct-ans { border-color: var(--accent2); background: rgba(56,217,169,0.1); }
+  .option-btn.wrong-ans { border-color: var(--accent4); background: rgba(240,101,149,0.1); }
+  .option-btn:disabled { cursor: default; }
+  .opt-letter { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+  .explanation {
+    margin-top: 16px; padding: 16px 18px; border-radius: 10px;
+    font-size: 14px; line-height: 1.7; color: #BDB8B0;
+    animation: fadeIn 0.3s ease;
+  }
+  .explanation.correct { background: rgba(56,217,169,0.08); border-left: 3px solid var(--accent2); }
+  .explanation.incorrect { background: rgba(240,101,149,0.08); border-left: 3px solid var(--accent4); }
+
+  .quiz-submit-btn {
+    width: 100%; padding: 16px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, var(--accent1), #7BA7FF);
+    color: white; font-size: 16px; font-weight: 700;
+    font-family: 'DM Sans', sans-serif; cursor: pointer;
+    transition: all 0.2s; margin-top: 8px;
+  }
+  .quiz-submit-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .quiz-result {
+    text-align: center; padding: 36px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 16px; margin-top: 24px;
+    animation: fadeIn 0.4s ease;
+  }
+  .qr-score { font-family: 'JetBrains Mono', monospace; font-size: 64px; font-weight: 700; color: var(--accent2); line-height: 1; margin-bottom: 8px; }
+  .qr-label { font-size: 16px; color: var(--muted); margin-bottom: 20px; }
+
+  /* FINAL EXAM */
+  .final-wrap { padding: 8px 0; }
+  .final-score-card {
+    background: linear-gradient(135deg, rgba(56,217,169,0.1), rgba(91,138,240,0.1));
+    border: 1px solid rgba(56,217,169,0.3);
+    border-radius: 20px; padding: 40px; text-align: center; margin-top: 28px;
+    animation: fadeIn 0.5s ease;
+  }
+  .fs-emoji { font-size: 64px; margin-bottom: 16px; }
+  .fs-score { font-family: 'JetBrains Mono', monospace; font-size: 80px; font-weight: 700; color: var(--accent2); line-height: 1; }
+  .fs-of { font-size: 20px; color: var(--muted); margin-bottom: 8px; }
+  .fs-pct { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+  .fs-msg { font-size: 16px; color: var(--muted); max-width: 400px; margin: 0 auto 28px; }
+
+  /* ANIMATIONS */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.4s ease forwards; }
+
+  /* MOBILE */
+  .menu-toggle { display: none; background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; padding: 4px; }
+  @media (max-width: 768px) {
+    .sidebar { position: fixed; left: -280px; transition: left 0.3s; z-index: 100; height: 100vh; }
+    .sidebar.open { left: 0; }
+    .menu-toggle { display: block; }
+    .content-area { padding: 32px 24px 60px; }
+    .home-hero { padding: 48px 24px 40px; }
+    .hero-title { font-size: 36px; }
+    .topbar { padding: 14px 20px; }
+    .stats-row { gap: 20px; }
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; }
+    .overlay.show { display: block; }
+  }
+  @media (min-width: 769px) { .menu-toggle { display: none !important; } }
+
+  /* SPECIAL COMPONENTS */
+  .v-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; }
+  @media (max-width: 600px) { .v-cards { grid-template-columns: 1fr; } }
+  .v-card { border-radius: 14px; padding: 22px; border: 1px solid var(--border); }
+  .v-card .vc-letter { font-family: 'Playfair Display', serif; font-size: 52px; font-weight: 900; line-height: 1; opacity: 0.25; margin-bottom: 8px; }
+  .v-card .vc-name { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .v-card .vc-def { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .v-card .vc-ex { font-size: 12px; color: var(--muted); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-style: italic; }
+
+  .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+  @media (max-width: 600px) { .comparison { grid-template-columns: 1fr; } }
+  .comp-col { border-radius: 14px; padding: 22px; border: 1px solid var(--border); background: var(--surface2); }
+  .comp-col .cc-head { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .comp-col ul { list-style: none; }
+  .comp-col ul li { padding: 7px 0; font-size: 14px; color: var(--muted); display: flex; gap: 8px; }
+  .comp-col ul li::before { content: '→'; color: var(--accent2); flex-shrink: 0; }
+
+  .callout-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--text);
+    padding: 24px 32px;
+    border-left: 4px solid var(--accent1);
+    margin: 32px 0;
+    background: rgba(91,138,240,0.05);
+    border-radius: 0 12px 12px 0;
+  }
+
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .tag { padding: 6px 14px; border-radius: 100px; font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--muted); }
+
+  .ethical-card { border-radius: 14px; padding: 24px; margin: 16px 0; border: 1px solid; }
+  .ethical-card .eth-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+  .ethical-card .eth-body { font-size: 14px; line-height: 1.7; color: var(--muted); }
+  .ethical-card .eth-example { margin-top: 12px; padding: 12px; border-radius: 8px; font-size: 13px; font-style: italic; }
+
+  .section-hidden { display: none; }
+  .section-active { display: block; }
+
+  /* CERT */
+  .cert {
+    border: 2px solid var(--accent2);
+    border-radius: 20px;
+    padding: 48px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(56,217,169,0.05), rgba(91,138,240,0.05));
+    margin-top: 32px;
+  }
+  .cert-title { font-family: 'Playfair Display', serif; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; color: var(--muted); margin-bottom: 24px; }
+  .cert-name { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--text); margin-bottom: 16px; }
+  .cert-body { font-size: 16px; color: var(--muted); line-height: 1.8; max-width: 480px; margin: 0 auto 24px; }
+  .cert-score { font-family: 'JetBrains Mono', monospace; font-size: 48px; font-weight: 700; color: var(--accent2); }
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <h1>IA & Big Data</h1>
+      <p>Curso Completo · 4 Módulos</p>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label">Progreso General</div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="globalBar"></div></div>
+      <div class="progress-pct" id="globalPct">0%</div>
+    </div>
+
+    <div class="nav-module">
+      <div class="nav-module-title">🏠 Inicio</div>
+      <div class="nav-item" data-sec="home" onclick="navigate('home')"><div class="nav-dot"></div>Presentación del Curso</div>
+    </div>
+
+    <div class="nav-module">
+      <div class="nav-module-title" style="color:#5B8AF0">🤖 Módulo 1 — IA</div>
+      <div class="nav-item" data-sec="m1s1" onclick="navigate('m1s1')"><div class="nav-dot"></div>¿Qué es la IA?</div>
+      <div class="nav-item" data-sec="m1s2" onclick="navigate('m1s2')"><div class="nav-dot"></div>Historia y Evolución</div>
+      <div class="nav-item" data-sec="m1s3" onclick="navigate('m1s3')"><div class="nav-dot"></div>Tipos de IA</div>
+      <div class="nav-item" data-sec="m1s4" onclick="navigate('m1s4')"><div class="nav-dot"></div>Machine Learning</div>
+      <div class="nav-item" data-sec="m1s5" onclick="navigate('m1s5')"><div class="nav-dot"></div>Aplicaciones Prácticas</div>
+      <div class="nav-item" data-sec="m1q" onclick="navigate('m1q')"><div class="nav-dot"></div>📝 Quiz Módulo 1</div>
+    </div>
+
+    <div class="nav-module">
+      <div class="nav-module-title" style="color:#38D9A9">📊 Módulo 2 — Big Data</div>
+      <div class="nav-item" data-sec="m2s1" onclick="navigate('m2s1')"><div class="nav-dot"></div>¿Qué es Big Data?</div>
+      <div class="nav-item" data-sec="m2s2" onclick="navigate('m2s2')"><div class="nav-dot"></div>Las 5 V's a Fondo</div>
+      <div class="nav-item" data-sec="m2s3" onclick="navigate('m2s3')"><div class="nav-dot"></div>Arquitectura y Tecnologías</div>
+      <div class="nav-item" data-sec="m2s4" onclick="navigate('m2s4')"><div class="nav-dot"></div>Casos Reales</div>
+      <div class="nav-item" data-sec="m2q" onclick="navigate('m2q')"><div class="nav-dot"></div>📝 Quiz Módulo 2</div>
+    </div>
+
+    <div class="nav-module">
+      <div class="nav-module-title" style="color:#F59E0B">🔗 Módulo 3 — Convergencia</div>
+      <div class="nav-item" data-sec="m3s1" onclick="navigate('m3s1')"><div class="nav-dot"></div>IA + Big Data: Sinergia</div>
+      <div class="nav-item" data-sec="m3s2" onclick="navigate('m3s2')"><div class="nav-dot"></div>Flujo de Datos e IA</div>
+      <div class="nav-item" data-sec="m3s3" onclick="navigate('m3s3')"><div class="nav-dot"></div>Proyectos del Mundo Real</div>
+      <div class="nav-item" data-sec="m3q" onclick="navigate('m3q')"><div class="nav-dot"></div>📝 Quiz Módulo 3</div>
+    </div>
+
+    <div class="nav-module">
+      <div class="nav-module-title" style="color:#F06595">⚖️ Módulo 4 — Ética y Futuro</div>
+      <div class="nav-item" data-sec="m4s1" onclick="navigate('m4s1')"><div class="nav-dot"></div>Privacidad y Vigilancia</div>
+      <div class="nav-item" data-sec="m4s2" onclick="navigate('m4s2')"><div class="nav-dot"></div>Sesgos Algorítmicos</div>
+      <div class="nav-item" data-sec="m4s3" onclick="navigate('m4s3')"><div class="nav-dot"></div>Impacto Laboral y Futuro</div>
+      <div class="nav-item" data-sec="m4q" onclick="navigate('m4q')"><div class="nav-dot"></div>📝 Quiz Módulo 4</div>
+    </div>
+
+    <div class="nav-module">
+      <div class="nav-module-title" style="color:#A78BFA">🏆 Evaluación Final</div>
+      <div class="nav-item" data-sec="final" onclick="navigate('final')"><div class="nav-dot"></div>Examen Final (20 preguntas)</div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main" id="mainArea">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="breadcrumb" id="breadcrumb">Inicio</div>
+      </div>
+      <div class="nav-btns">
+        <button class="btn" onclick="navPrev()" id="btnPrev">← Anterior</button>
+        <button class="btn btn-primary" onclick="navNext()" id="btnNext">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- ===== HOME ===== -->
+    <div id="sec-home" class="section-active">
+      <div class="home-hero">
+        <div class="hero-badge">✦ Curso Interactivo</div>
+        <h1 class="hero-title">Inteligencia<br><span class="g1">Artificial</span> &<br><span class="g2">Big Data</span></h1>
+        <p class="hero-sub">Aprende desde los fundamentos hasta los casos de uso reales. Contenido para estudiar, comprender y exponer con confianza ante cualquier audiencia.</p>
+        <div class="stats-row">
+          <div class="stat"><div class="stat-n">4</div><div class="stat-l">Módulos</div></div>
+          <div class="stat"><div class="stat-n">18</div><div class="stat-l">Lecciones</div></div>
+          <div class="stat"><div class="stat-n">4</div><div class="stat-l">Quizzes</div></div>
+          <div class="stat"><div class="stat-n">1</div><div class="stat-l">Examen Final</div></div>
+        </div>
+        <div class="module-cards">
+          <div class="module-card" style="--mc:#5B8AF0" onclick="navigate('m1s1')">
+            <div class="mc-icon">🤖</div>
+            <div class="mc-tag">Módulo 1</div>
+            <div class="mc-title">Inteligencia Artificial</div>
+            <div class="mc-desc">Fundamentos, historia, tipos, Machine Learning y aplicaciones reales.</div>
+            <div class="mc-lessons"><span class="mc-pill">5 lecciones</span><span class="mc-pill">Quiz</span></div>
+          </div>
+          <div class="module-card" style="--mc:#38D9A9" onclick="navigate('m2s1')">
+            <div class="mc-icon">📊</div>
+            <div class="mc-tag">Módulo 2</div>
+            <div class="mc-title">Big Data</div>
+            <div class="mc-desc">Definición, las 5 V's, arquitecturas, tecnologías y casos de éxito.</div>
+            <div class="mc-lessons"><span class="mc-pill">4 lecciones</span><span class="mc-pill">Quiz</span></div>
+          </div>
+          <div class="module-card" style="--mc:#F59E0B" onclick="navigate('m3s1')">
+            <div class="mc-icon">🔗</div>
+            <div class="mc-tag">Módulo 3</div>
+            <div class="mc-title">IA + Big Data</div>
+            <div class="mc-desc">Sinergia entre ambas tecnologías, flujo de datos, proyectos del mundo real.</div>
+            <div class="mc-lessons"><span class="mc-pill">3 lecciones</span><span class="mc-pill">Quiz</span></div>
+          </div>
+          <div class="module-card" style="--mc:#F06595" onclick="navigate('m4s1')">
+            <div class="mc-icon">⚖️</div>
+            <div class="mc-tag">Módulo 4</div>
+            <div class="mc-title">Ética y Futuro</div>
+            <div class="mc-desc">Privacidad, sesgos, impacto laboral y el futuro de estas tecnologías.</div>
+            <div class="mc-lessons"><span class="mc-pill">3 lecciones</span><span class="mc-pill">Quiz</span></div>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="font-size:16px;padding:16px 40px;" onclick="navigate('m1s1')">Comenzar el Curso →</button>
+      </div>
+    </div>
+
+    <!-- ===== M1S1 ===== -->
+    <div id="sec-m1s1" class="section-hidden content-area fade-in">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="--mc:#5B8AF0;color:#5B8AF0;border-color:rgba(91,138,240,0.3);background:rgba(91,138,240,0.08);">🤖 Módulo 1</div>
+        <h2 class="sec-title">¿Qué es la Inteligencia Artificial?</h2>
+        <p class="sec-subtitle">Una comprensión profunda del concepto que está transformando el mundo.</p>
+      </div>
+
+      <p class="prose">La <strong>Inteligencia Artificial (IA)</strong> es la disciplina de la informática que busca crear sistemas capaces de realizar tareas que, cuando son ejecutadas por humanos, requieren inteligencia. Fue definida formalmente por John McCarthy en 1956 como "la ciencia e ingeniería de hacer máquinas inteligentes".</p>
+
+      <div class="info-box">
+        <div class="box-label">💡 Definición Clave</div>
+        La IA no significa que las máquinas "piensen" como humanos. Significa que pueden <strong>imitar comportamientos inteligentes</strong>: reconocer patrones, aprender de experiencias, tomar decisiones y resolver problemas, a menudo superando la velocidad y precisión humana.
+      </div>
+
+      <h3>Las 4 Capacidades Fundamentales</h3>
+      <div class="card-grid">
+        <div class="concept-card">
+          <div class="cc-icon">🧠</div>
+          <div class="cc-title">Machine Learning (Aprendizaje Automático)</div>
+          <div class="cc-body">Los sistemas aprenden de los datos y mejoran su rendimiento con la experiencia. No necesitan reglas programadas explícitamente; descubren los patrones por sí mismos. Ejemplo: un filtro de spam que aprende qué correos son basura.</div>
+        </div>
+        <div class="concept-card">
+          <div class="cc-icon">💬</div>
+          <div class="cc-title">Procesamiento del Lenguaje Natural (PLN)</div>
+          <div class="cc-body">Permite a las máquinas entender, interpretar y generar lenguaje humano. Abarca traducción automática, análisis de sentimientos, chatbots, resumen de textos y generación de contenido. Ejemplos: ChatGPT, Google Translate, Siri.</div>
+        </div>
+        <div class="concept-card">
+          <div class="cc-icon">👁️</div>
+          <div class="cc-title">Visión por Computadora</div>
+          <div class="cc-body">Capacita a las máquinas para interpretar y entender información visual (imágenes y videos). Aplicaciones: diagnóstico médico por imágenes, vehículos autónomos, control de calidad industrial, reconocimiento facial.</div>
+        </div>
+        <div class="concept-card">
+          <div class="cc-icon">⚖️</div>
+          <div class="cc-title">Razonamiento y Planificación</div>
+          <div class="cc-body">Capacidad de analizar situaciones complejas, hacer inferencias lógicas y planificar secuencias de acciones para alcanzar objetivos. Ejemplo: los sistemas de IA que juegan ajedrez o Go a nivel de campeón mundial.</div>
+        </div>
+      </div>
+
+      <div class="info-box green">
+        <div class="box-label">🎯 Para tu exposición</div>
+        Puedes usar esta analogía: <strong>"La IA es como enseñarle a una computadora a pescar, en lugar de darle un pescado."</strong> En vez de programar cada regla, le damos datos para que aprenda las reglas sola.
+      </div>
+    </div>
+
+    <!-- ===== M1S2 ===== -->
+    <div id="sec-m1s2" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#5B8AF0;border-color:rgba(91,138,240,0.3);background:rgba(91,138,240,0.08);">🤖 Módulo 1</div>
+        <h2 class="sec-title">Historia y Evolución de la IA</h2>
+        <p class="sec-subtitle">Desde los primeros sueños hasta los modelos de hoy.</p>
+      </div>
+
+      <p class="prose">La historia de la IA es un ciclo fascinante de grandes esperanzas, inviernos de desilusión y renacimientos explosivos. Comprender este recorrido ayuda a entender por qué estamos viviendo un momento tan único.</p>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot">🌱</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">1950–1956 — Los Orígenes</div>
+            <div class="tl-body">Alan Turing propone el "Test de Turing" para evaluar si una máquina puede pensar. En 1956, John McCarthy acuña el término "Inteligencia Artificial" en la conferencia de Dartmouth y nace oficialmente como disciplina.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot">🔥</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">1957–1974 — El Primer Optimismo</div>
+            <div class="tl-body">Primeros programas que jugaban damas y resolvían álgebra. Herbert Simon predijo que "en 20 años las máquinas harán cualquier trabajo que pueda hacer un hombre". Los fondos de investigación fluían con generosidad.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot">❄️</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">1974–1980 — El Primer Invierno</div>
+            <div class="tl-body">Las limitaciones de la potencia computacional y la falta de datos suficientes frenaron el progreso. Los organismos de financiamiento cortaron fondos ante la falta de resultados concretos. Período de escepticismo generalizado.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot">💼</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">1980–1987 — Sistemas Expertos</div>
+            <div class="tl-body">Los "sistemas expertos" codificaban el conocimiento de especialistas en reglas lógicas. MYCIN podía diagnosticar enfermedades bacterianas. La industria invierte miles de millones. Segundo boom de la IA.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot">❄️</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">1987–1993 — El Segundo Invierno</div>
+            <div class="tl-body">Los sistemas expertos eran costosos de mantener y frágiles. El mercado de hardware especializado colapsa. Otro período de desencanto.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot">♟️</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">1997 — Deep Blue vence a Kasparov</div>
+            <div class="tl-body">El supercomputador de IBM derrota al campeón mundial de ajedrez Garry Kasparov. Hito cultural y técnico que muestra la potencia del cómputo aplicado a juegos estratégicos.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot">🚀</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">2012–Hoy — La Revolución del Deep Learning</div>
+            <div class="tl-body">AlexNet (2012) revolutiona la visión por computadora usando redes neuronales profundas. La combinación de <strong>Big Data + GPUs + algoritmos mejorados</strong> dispara el rendimiento. Hoy tenemos ChatGPT, DALL-E, Gemini y sistemas que superan a humanos en tareas específicas.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box amber">
+        <div class="box-label">📢 Dato impactante para exposición</div>
+        En 2023, GPT-4 superó a abogados humanos en el examen de la barra de EE.UU. (top 10%). En 2016, AlphaGo derrotó al campeón mundial de Go, un juego con más combinaciones posibles que átomos en el universo observable.
+      </div>
+    </div>
+
+    <!-- ===== M1S3 ===== -->
+    <div id="sec-m1s3" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#5B8AF0;border-color:rgba(91,138,240,0.3);background:rgba(91,138,240,0.08);">🤖 Módulo 1</div>
+        <h2 class="sec-title">Tipos de Inteligencia Artificial</h2>
+        <p class="sec-subtitle">Las tres categorías que definen el alcance actual y futuro de la IA.</p>
+      </div>
+
+      <p class="prose">La IA no es un concepto monolítico. Se clasifica según su <strong>alcance de capacidades</strong>. Esta distinción es crucial para entender en qué punto estamos y hacia dónde vamos.</p>
+
+      <div class="card-grid">
+        <div class="concept-card" style="border-color:rgba(91,138,240,0.3)">
+          <div class="cc-icon">🎯</div>
+          <div class="cc-title" style="color:#5B8AF0">IA Débil — ANI (Artificial Narrow Intelligence)</div>
+          <div class="cc-body">
+            <strong>Estado: Existe hoy.</strong> Especializada en UNA tarea específica. No puede transferir su conocimiento a otro dominio. Es muy buena en lo suyo, pero fuera de ese ámbito es inútil.<br><br>
+            <strong>Ejemplos cotidianos:</strong> Siri, Alexa, ChatGPT, Netflix (recomendaciones), Spotify, filtros de spam, sistemas de reconocimiento facial, Tesla Autopilot, DeepMind AlphaFold.
+          </div>
+        </div>
+        <div class="concept-card" style="border-color:rgba(245,158,11,0.3)">
+          <div class="cc-icon">🌐</div>
+          <div class="cc-title" style="color:#F59E0B">IA General — AGI (Artificial General Intelligence)</div>
+          <div class="cc-body">
+            <strong>Estado: No existe aún.</strong> Tendría las mismas capacidades cognitivas generales que un humano. Podría aprender cualquier tarea intelectual, transferir conocimiento entre dominios y razonar de forma flexible.<br><br>
+            <strong>¿Cuándo llegará?</strong> Las estimaciones van de 2030 a "nunca". Es el objetivo de organizaciones como OpenAI, DeepMind y Anthropic. Genera debate intenso en la comunidad científica.
+          </div>
+        </div>
+        <div class="concept-card" style="border-color:rgba(240,101,149,0.3)">
+          <div class="cc-icon">🚀</div>
+          <div class="cc-title" style="color:#F06595">Superinteligencia — ASI (Artificial Super Intelligence)</div>
+          <div class="cc-body">
+            <strong>Estado: Concepto teórico.</strong> Superaría las capacidades cognitivas humanas en TODOS los aspectos: creatividad, sabiduría, resolución de problemas sociales, investigación científica.<br><br>
+            <strong>El punto crítico:</strong> Podría mejorase y reprogramarse a sí misma (recursión), lo que generaría una "explosión de inteligencia" difícil de controlar. Es el escenario que preocupa a pensadores como Nick Bostrom.
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3>Clasificación por Función</h3>
+      <p class="prose">Además de la clasificación por alcance, la IA también se clasifica por cómo procesa su entorno:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tipo</th><th>Descripción</th><th>Ejemplo</th></tr></thead>
+          <tbody>
+            <tr><td>IA Reactiva</td><td>Sin memoria. Solo reacciona al presente.</td><td>Deep Blue (ajedrez)</td></tr>
+            <tr><td>Memoria Limitada</td><td>Aprende del pasado reciente para tomar decisiones.</td><td>Vehículos autónomos</td></tr>
+            <tr><td>Teoría de la Mente</td><td>Entiende emociones y estados mentales (en desarrollo).</td><td>Robots sociales avanzados</td></tr>
+            <tr><td>IA Consciente</td><td>Conciencia propia. Solo en ciencia ficción.</td><td>HAL 9000, Samantha (Her)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box green">
+        <div class="box-label">🎯 Punto clave para exposición</div>
+        <strong>Todo lo que usamos hoy es ANI.</strong> Cuando decimos que la IA "supera a los humanos", lo hace solo en tareas muy específicas. ChatGPT no puede conducir un auto. Tesla Autopilot no puede escribir un ensayo. Cada sistema solo hace su cosa.
+      </div>
+    </div>
+
+    <!-- ===== M1S4 ===== -->
+    <div id="sec-m1s4" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#5B8AF0;border-color:rgba(91,138,240,0.3);background:rgba(91,138,240,0.08);">🤖 Módulo 1</div>
+        <h2 class="sec-title">Machine Learning: El Corazón de la IA Moderna</h2>
+        <p class="sec-subtitle">Cómo las máquinas aprenden de los datos sin ser programadas explícitamente.</p>
+      </div>
+
+      <p class="prose">El <strong>Machine Learning (ML)</strong> es la rama más importante de la IA moderna. En lugar de programar reglas manualmente ("si el email tiene 'oferta exclusiva' → es spam"), el sistema recibe miles de ejemplos y descubre los patrones por sí mismo.</p>
+
+      <div class="callout-quote">"El Machine Learning es el estudio de algoritmos computacionales que mejoran automáticamente a través de la experiencia." — Tom Mitchell, 1997</div>
+
+      <h3>Los 3 Paradigmas del Aprendizaje</h3>
+      <div class="card-grid">
+        <div class="concept-card">
+          <div class="cc-icon">🏷️</div>
+          <div class="cc-title">Aprendizaje Supervisado</div>
+          <div class="cc-body">El modelo aprende con ejemplos etiquetados (input → output conocido). Como un estudiante con libro de respuestas.<br><br><strong>Ejemplos:</strong> Clasificación de emails (spam/no spam), predicción de precios de casas, diagnóstico médico por imagen.</div>
+        </div>
+        <div class="concept-card">
+          <div class="cc-icon">🔍</div>
+          <div class="cc-title">Aprendizaje No Supervisado</div>
+          <div class="cc-body">El modelo encuentra patrones en datos sin etiquetas. Descubre estructura oculta por sí solo.<br><br><strong>Ejemplos:</strong> Segmentación de clientes, sistemas de recomendación, detección de anomalías en redes bancarias.</div>
+        </div>
+        <div class="concept-card">
+          <div class="cc-icon">🎮</div>
+          <div class="cc-title">Aprendizaje por Refuerzo</div>
+          <div class="cc-body">El agente aprende probando acciones y recibiendo recompensas o penalizaciones. Como entrenar a un perro con premios.<br><br><strong>Ejemplos:</strong> AlphaGo, robots que aprenden a caminar, sistemas de trading financiero.</div>
+        </div>
+      </div>
+
+      <h3>Redes Neuronales y Deep Learning</h3>
+      <p class="prose">Las <strong>Redes Neuronales Artificiales</strong> son modelos inspirados en el cerebro humano. Consisten en capas de "neuronas artificiales" que procesan información. Cuando estas redes tienen muchas capas, hablamos de <strong>Deep Learning (Aprendizaje Profundo)</strong>.</p>
+
+      <div class="code-block">
+<span class="cm"># Ejemplo simplificado: Cómo una red neuronal aprende a detectar spam</span>
+<span class="cm"># Entrada: palabras del email → Salida: spam (1) o no spam (0)</span>
+
+<span class="kw">Capa 1</span> (Entrada):   <span class="str">"oferta"</span>, <span class="str">"gratis"</span>, <span class="str">"urgente"</span>, <span class="str">"banco"</span>
+        ↓  ↓  ↓  ↓
+<span class="kw">Capas Ocultas</span>:       Detectan patrones → combinan características
+        ↓
+<span class="kw">Capa de Salida</span>:      <span class="num">0.95</span> → Spam ✓
+
+<span class="cm"># Con millones de emails etiquetados, la red aprende</span>
+<span class="cm"># qué combinaciones de palabras indican spam</span></div>
+
+      <div class="numbers-row">
+        <div class="big-number"><div class="bn">175B</div><div class="bl">Parámetros de GPT-3</div></div>
+        <div class="big-number"><div class="bn">1T+</div><div class="bl">Parámetros estimados GPT-4</div></div>
+        <div class="big-number"><div class="bn">94%</div><div class="bl">Precisión en visión por computadora (mejor que humanos)</div></div>
+      </div>
+    </div>
+
+    <!-- ===== M1S5 ===== -->
+    <div id="sec-m1s5" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#5B8AF0;border-color:rgba(91,138,240,0.3);background:rgba(91,138,240,0.08);">🤖 Módulo 1</div>
+        <h2 class="sec-title">Aplicaciones de la IA en la Vida Diaria</h2>
+        <p class="sec-subtitle">La IA ya no es ciencia ficción: está en tu bolsillo, en tu hospital, en tu auto.</p>
+      </div>
+
+      <p class="prose">La IA está presente en casi todos los aspectos de nuestra vida. La mayoría de las veces no la vemos, pero está trabajando en segundo plano. Veamos los sectores más impactados con profundidad:</p>
+
+      <h3>🏥 Salud — Revolución Médica</h3>
+      <div class="card-grid">
+        <div class="concept-card">
+          <div class="cc-icon">🔬</div>
+          <div class="cc-title">Diagnóstico por Imagen</div>
+          <div class="cc-body">La IA de Google (DeepMind) detecta cáncer de mama en mamografías con un 11.5% menos de falsos negativos que radiólogos humanos. IBM Watson analiza resonancias para detectar tumores cerebrales.</div>
+        </div>
+        <div class="concept-card">
+          <div class="cc-icon">💊</div>
+          <div class="cc-title">Descubrimiento de Fármacos</div>
+          <div class="cc-body">AlphaFold 2 (DeepMind, 2020) resolvió el problema del plegamiento de proteínas — uno de los mayores desafíos de la biología en 50 años — en meses. Acelera el desarrollo de medicamentos de décadas a años.</div>
+        </div>
+      </div>
+
+      <h3>🚗 Transporte — Movilidad Autónoma</h3>
+      <div class="info-box">
+        <div class="box-label">🚘 Niveles de Autonomía (SAE)</div>
+        <strong>Nivel 0:</strong> Sin automatización (humano controla todo) →
+        <strong>Nivel 3:</strong> Automatización condicional (Tesla) →
+        <strong>Nivel 5:</strong> Totalmente autónomo (objetivo de Waymo). La IA procesa datos de sensores, cámaras y LiDAR en tiempo real para tomar decisiones de conducción a 120 km/h.
+      </div>
+
+      <h3>🎬 Entretenimiento — Personalización Masiva</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Plataforma</th><th>Uso de IA</th><th>Impacto</th></tr></thead>
+          <tbody>
+            <tr><td>Netflix</td><td>Algoritmo de recomendación</td><td>Ahorra $1B/año en retención de usuarios</td></tr>
+            <tr><td>Spotify</td><td>Discover Weekly, análisis de audio</td><td>40M+ canciones analizadas para personalización</td></tr>
+            <tr><td>YouTube</td><td>Recomendaciones + moderación</td><td>70% del tiempo de visionado por recomendaciones IA</td></tr>
+            <tr><td>TikTok</td><td>For You Page (FYP)</td><td>Aprende preferencias en solo 30 minutos de uso</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>📚 Educación — Aprendizaje Personalizado</h3>
+      <div class="tag-cloud">
+        <span class="tag">Tutores virtuales (Khan Academy)</span>
+        <span class="tag">Corrección automática de ensayos</span>
+        <span class="tag">Detección de plagio (Turnitin)</span>
+        <span class="tag">Adaptación del ritmo de aprendizaje</span>
+        <span class="tag">Traducción instantánea de materiales</span>
+        <span class="tag">Generación de ejercicios personalizados</span>
+      </div>
+    </div>
+
+    <!-- ===== M1 QUIZ ===== -->
+    <div id="sec-m1q" class="section-hidden content-area">
+      <div class="quiz-wrap">
+        <div class="quiz-intro">
+          <div class="qi-icon">📝</div>
+          <div class="qi-title">Quiz — Módulo 1: IA</div>
+          <div class="qi-sub">5 preguntas sobre los conceptos fundamentales de la IA</div>
+        </div>
+        <div id="quiz-m1"></div>
+        <button class="quiz-submit-btn" id="submit-m1" onclick="submitQuiz('m1')" disabled>Verificar respuestas</button>
+        <div id="result-m1" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- ===== M2S1 ===== -->
+    <div id="sec-m2s1" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#38D9A9;border-color:rgba(56,217,169,0.3);background:rgba(56,217,169,0.08);">📊 Módulo 2</div>
+        <h2 class="sec-title">¿Qué es Big Data?</h2>
+        <p class="sec-subtitle">Más allá del volumen: entendiendo la verdadera naturaleza del dato masivo.</p>
+      </div>
+
+      <p class="prose">El término <strong>Big Data</strong> fue popularizado por el analista Doug Laney en 2001 al describir los desafíos que enfrentaban las organizaciones con el crecimiento de sus datos. Pero Big Data no es solo "muchos datos": es un <strong>ecosistema completo de tecnologías, procesos y culturas</strong> que permite extraer valor de información que antes era imposible de procesar.</p>
+
+      <div class="info-box green">
+        <div class="box-label">📐 Definición técnica</div>
+        Big Data es cualquier conjunto de datos cuyo <strong>volumen, velocidad o variedad</strong> supera la capacidad de las herramientas relacionales convencionales para capturarlos, gestionarlos y procesarlos en un tiempo razonable.
+      </div>
+
+      <h3>¿Por qué ahora?</h3>
+      <p class="prose">Tres fuerzas convergentes explican la explosión del Big Data:</p>
+      <div class="card-grid">
+        <div class="concept-card">
+          <div class="cc-icon">📱</div>
+          <div class="cc-title">Digitalización masiva</div>
+          <div class="cc-body">5,000 millones de personas conectadas a internet. Cada búsqueda, compra, like, GPS y transacción genera datos. En 2023 se crearon 120 zettabytes de datos globalmente.</div>
+        </div>
+        <div class="concept-card">
+          <div class="cc-icon">💰</div>
+          <div class="cc-title">Almacenamiento barato</div>
+          <div class="cc-body">En 1980 almacenar 1 GB costaba $300,000. En 2023 cuesta menos de $0.03. La nube (AWS, Azure, GCP) hace el almacenamiento escalable y accesible para cualquier empresa.</div>
+        </div>
+        <div class="concept-card">
+          <div class="cc-icon">⚡</div>
+          <div class="cc-title">Procesamiento distribuido</div>
+          <div class="cc-body">Hadoop y Spark permiten dividir un problema enorme entre cientos de computadoras y resolverlo en paralelo. Lo que tardaría años en un servidor, se resuelve en horas con un clúster.</div>
+        </div>
+      </div>
+
+      <div class="numbers-row">
+        <div class="big-number"><div class="bn">2.5</div><div class="bl">Quintillones de bytes creados por día</div></div>
+        <div class="big-number"><div class="bn">90%</div><div class="bl">De los datos del mundo creados en los últimos 2 años</div></div>
+        <div class="big-number"><div class="bn">175 ZB</div><div class="bl">Datos globales proyectados para 2025</div></div>
+      </div>
+    </div>
+
+    <!-- ===== M2S2 ===== -->
+    <div id="sec-m2s2" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#38D9A9;border-color:rgba(56,217,169,0.3);background:rgba(56,217,169,0.08);">📊 Módulo 2</div>
+        <h2 class="sec-title">Las 5 V's del Big Data a Fondo</h2>
+        <p class="sec-subtitle">El marco conceptual que define al Big Data, explicado con ejemplos reales.</p>
+      </div>
+
+      <p class="prose">Las "V's del Big Data" son el marco estándar para describir las características que definen a los datos masivos. Originalmente eran 3 (Laney, 2001); hoy reconocemos 5 fundamentales.</p>
+
+      <div class="v-cards">
+        <div class="v-card" style="background:rgba(91,138,240,0.07);border-color:rgba(91,138,240,0.25)">
+          <div class="vc-letter" style="color:#5B8AF0">V</div>
+          <div class="vc-name">Volumen</div>
+          <div class="vc-def">La cantidad de datos generados y almacenados. La escala va de petabytes a zettabytes. Es la "V" más obvia: simplemente hay demasiados datos para procesarlos con herramientas convencionales.</div>
+          <div class="vc-ex">Facebook procesa 500TB de nuevos datos cada día. Walmart recopila más de 1 millón de transacciones de clientes por hora.</div>
+        </div>
+        <div class="v-card" style="background:rgba(56,217,169,0.07);border-color:rgba(56,217,169,0.25)">
+          <div class="vc-letter" style="color:#38D9A9">V</div>
+          <div class="vc-name">Velocidad</div>
+          <div class="vc-def">La rapidez con la que los datos se generan, procesan y analizan. Para muchas aplicaciones (trading financiero, detección de fraude), los datos deben procesarse en milisegundos.</div>
+          <div class="vc-ex">Las tarjetas de crédito procesan 150 millones de transacciones por día. Cada transacción debe analizarse en <100ms para detectar fraude antes de aprobarla.</div>
+        </div>
+        <div class="v-card" style="background:rgba(245,158,11,0.07);border-color:rgba(245,158,11,0.25)">
+          <div class="vc-letter" style="color:#F59E0B">V</div>
+          <div class="vc-name">Variedad</div>
+          <div class="vc-def">La diversidad de tipos y fuentes de datos. El 80% de los datos del mundo son no estructurados (textos, imágenes, videos, audio), que los sistemas tradicionales no pueden analizar directamente.</div>
+          <div class="vc-ex">Un hospital tiene: registros en texto (notas médicas), imágenes (radiografías), señales (ECG), videos (cirugías), datos numéricos (signos vitales). Todo eso es Big Data.</div>
+        </div>
+        <div class="v-card" style="background:rgba(167,139,250,0.07);border-color:rgba(167,139,250,0.25)">
+          <div class="vc-letter" style="color:#A78BFA">V</div>
+          <div class="vc-name">Veracidad</div>
+          <div class="vc-def">La confiabilidad y calidad de los datos. El 27% del tiempo de analistas se desperdicia en verificar datos incorrectos. "Garbage in, garbage out": un modelo entrenado con datos malos produce predicciones malas.</div>
+          <div class="vc-ex">Twitter tiene millones de bots. Si analizas sentimiento sin filtrar bots, tus conclusiones estarán sesgadas. La veracidad es clave antes de cualquier análisis.</div>
+        </div>
+        <div class="v-card" style="background:rgba(240,101,149,0.07);border-color:rgba(240,101,149,0.25)" style="grid-column:span 2">
+          <div class="vc-letter" style="color:#F06595">V</div>
+          <div class="vc-name">Valor</div>
+          <div class="vc-def">La utilidad real que se extrae de los datos. Los datos por sí solos no tienen valor; el valor emerge cuando se transforman en insights accionables, predicciones útiles o automatizaciones que ahorran dinero o tiempo.</div>
+          <div class="vc-ex">Amazon estima que su motor de recomendaciones (basado en Big Data) genera el 35% de sus ingresos totales. El valor de sus datos es literalmente miles de millones de dólares.</div>
+        </div>
+      </div>
+
+      <div class="info-box amber">
+        <div class="box-label">📢 Para tu exposición</div>
+        Usa esta frase: <strong>"Las 5 V's son el 'estado de salud' del Big Data. Si alguna V falla, todo el sistema falla."</strong> Datos masivos, rápidos y variados que son falsos (sin Veracidad) o que nadie sabe cómo usar (sin Valor) son inútiles.
+      </div>
+    </div>
+
+    <!-- ===== M2S3 ===== -->
+    <div id="sec-m2s3" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#38D9A9;border-color:rgba(56,217,169,0.3);background:rgba(56,217,169,0.08);">📊 Módulo 2</div>
+        <h2 class="sec-title">Arquitectura y Tecnologías del Big Data</h2>
+        <p class="sec-subtitle">Las herramientas que hacen posible procesar miles de millones de registros.</p>
+      </div>
+
+      <p class="prose">El ecosistema tecnológico del Big Data es vasto. Para entenderlo, lo organizamos en <strong>capas</strong>, cada una con una función específica dentro del flujo de procesamiento de datos.</p>
+
+      <h3>El Flujo del Big Data: De la Fuente al Insight</h3>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot">1</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">Ingesta (Captura)</div>
+            <div class="tl-body"><strong>Apache Kafka:</strong> Sistema de mensajería distribuida. Procesa millones de eventos por segundo (clics, transacciones, logs). LinkedIn lo creó internamente; hoy lo usan Netflix, Uber, Twitter.<br><strong>Apache Flume:</strong> Recolecta y mueve grandes volúmenes de logs.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot">2</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">Almacenamiento</div>
+            <div class="tl-body"><strong>HDFS (Hadoop Distributed File System):</strong> Divide archivos enormes en bloques y los distribuye en cientos de servidores. Si un servidor falla, los datos siguen disponibles (replicación).<br><strong>Data Lakes:</strong> Almacenes de datos en crudo (cualquier formato) en la nube. AWS S3, Azure Data Lake.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot">3</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">Procesamiento</div>
+            <div class="tl-body"><strong>Apache Hadoop MapReduce:</strong> Divide tareas enormes en subtareas paralelas ("map") y combina resultados ("reduce"). Para análisis de grandes volúmenes históricos.<br><strong>Apache Spark:</strong> 100x más rápido que Hadoop para muchos casos. Procesa datos en memoria RAM. Ideal para Machine Learning y análisis en tiempo real.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot">4</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">Análisis y Visualización</div>
+            <div class="tl-body"><strong>Apache Hive:</strong> Consultas SQL sobre Hadoop (para analistas sin conocer Java).<br><strong>Tableau, Power BI:</strong> Visualización de datos para toma de decisiones.<br><strong>Notebooks Jupyter:</strong> Análisis exploratorio con Python/R.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="comparison">
+        <div class="comp-col">
+          <div class="cc-head" style="color:#F59E0B">⚡ Batch Processing</div>
+          <ul>
+            <li>Procesa datos acumulados en bloques</li>
+            <li>Se ejecuta cada hora, día o semana</li>
+            <li>Alta eficiencia para análisis histórico</li>
+            <li>Herramientas: Hadoop MapReduce</li>
+            <li>Ejemplo: Generar reporte de ventas del mes</li>
+          </ul>
+        </div>
+        <div class="comp-col">
+          <div class="cc-head" style="color:#38D9A9">🔴 Stream Processing (Tiempo Real)</div>
+          <ul>
+            <li>Procesa datos en el momento que llegan</li>
+            <li>Latencia de milisegundos a segundos</li>
+            <li>Requiere más recursos computacionales</li>
+            <li>Herramientas: Kafka, Spark Streaming</li>
+            <li>Ejemplo: Detectar fraude en una transacción</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== M2S4 ===== -->
+    <div id="sec-m2s4" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#38D9A9;border-color:rgba(56,217,169,0.3);background:rgba(56,217,169,0.08);">📊 Módulo 2</div>
+        <h2 class="sec-title">Casos Reales: Cómo las Empresas Usan Big Data</h2>
+        <p class="sec-subtitle">Ejemplos concretos del impacto económico y social del Big Data.</p>
+      </div>
+
+      <div class="card-grid">
+        <div class="concept-card" style="border-color:rgba(56,217,169,0.3)">
+          <div class="cc-icon">🎬</div>
+          <div class="cc-title">Netflix — $1 Billón en Retención</div>
+          <div class="cc-body">Netflix analiza: qué ves, cuándo pausas, cuándo abandonas, en qué dispositivo, a qué hora. Con 230M suscriptores, procesa miles de millones de eventos diarios. Su algoritmo de recomendación evita cancelaciones que costarían $1B/año.</div>
+        </div>
+        <div class="concept-card" style="border-color:rgba(245,158,11,0.3)">
+          <div class="cc-icon">🛒</div>
+          <div class="cc-title">Amazon — Anticipating Shipping</div>
+          <div class="cc-body">Amazon patentó el "envío anticipatorio": predice qué vas a comprar ANTES de que lo compres y mueve el producto al almacén más cercano. Reducen el tiempo de entrega de días a horas. Usan historial de compras, búsquedas y hasta el tiempo meteorológico.</div>
+        </div>
+        <div class="concept-card" style="border-color:rgba(91,138,240,0.3)">
+          <div class="cc-icon">🚕</div>
+          <div class="cc-title">Uber — Precios Dinámicos</div>
+          <div class="cc-body">El "surge pricing" de Uber analiza en tiempo real: demanda de viajes, cantidad de conductores disponibles, tráfico, clima, eventos locales. En segundos, el precio puede multiplicarse por 3x en una zona con alta demanda.</div>
+        </div>
+        <div class="concept-card" style="border-color:rgba(240,101,149,0.3)">
+          <div class="cc-icon">🏥</div>
+          <div class="cc-title">Salud Pública — Predicción de Pandemias</div>
+          <div class="cc-body">Durante COVID-19, modelos de Big Data predijeron la propagación del virus con días de anticipación analizando: búsquedas en Google ("síntomas fiebre"), datos de movilidad de teléfonos, vuelos internacionales y publicaciones en redes sociales.</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <div class="box-label">💡 Reflexión para exposición</div>
+        <strong>¿Cómo genera valor el Big Data?</strong> Hay tres formas principales:
+        <br>1. <strong>Reducir costos</strong> (predecir cuándo una máquina fallará antes de que lo haga)
+        <br>2. <strong>Aumentar ingresos</strong> (recomendar productos que el cliente comprará)
+        <br>3. <strong>Tomar mejores decisiones</strong> (saber qué tiendas abrir según el comportamiento del barrio)
+      </div>
+    </div>
+
+    <!-- ===== M2 QUIZ ===== -->
+    <div id="sec-m2q" class="section-hidden content-area">
+      <div class="quiz-wrap">
+        <div class="quiz-intro">
+          <div class="qi-icon">📝</div>
+          <div class="qi-title">Quiz — Módulo 2: Big Data</div>
+          <div class="qi-sub">5 preguntas sobre tecnologías, arquitectura y casos de Big Data</div>
+        </div>
+        <div id="quiz-m2"></div>
+        <button class="quiz-submit-btn" id="submit-m2" onclick="submitQuiz('m2')" disabled>Verificar respuestas</button>
+        <div id="result-m2" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- ===== M3S1 ===== -->
+    <div id="sec-m3s1" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#F59E0B;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);">🔗 Módulo 3</div>
+        <h2 class="sec-title">La Sinergia entre IA y Big Data</h2>
+        <p class="sec-subtitle">Dos tecnologías que se necesitan mutuamente para existir a escala.</p>
+      </div>
+
+      <div class="callout-quote">"Big Data sin IA es como tener una biblioteca con millones de libros pero sin saber leer. La IA sin Big Data es como un genio sin experiencia."</div>
+
+      <p class="prose">La relación entre IA y Big Data es <strong>simbiótica y mutuamente dependiente</strong>. La IA moderna no existiría sin Big Data, y el Big Data no tendría valor práctico sin la IA para analizarlo.</p>
+
+      <div class="comparison">
+        <div class="comp-col">
+          <div class="cc-head" style="color:#5B8AF0">📦 Big Data → alimenta a la IA</div>
+          <ul>
+            <li>Proporciona millones de ejemplos de entrenamiento</li>
+            <li>Permite que los modelos generalicen mejor</li>
+            <li>Más datos = menor margen de error</li>
+            <li>Datos diversos = IA más robusta e imparcial</li>
+            <li>Histórico de datos = predicciones más precisas</li>
+          </ul>
+        </div>
+        <div class="comp-col">
+          <div class="cc-head" style="color:#38D9A9">🧠 IA → procesa el Big Data</div>
+          <ul>
+            <li>Analiza petabytes en horas, no años</li>
+            <li>Detecta patrones invisibles para humanos</li>
+            <li>Automatiza la toma de decisiones</li>
+            <li>Procesa datos no estructurados (imágenes, texto)</li>
+            <li>Genera predicciones en tiempo real</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>El Ciclo Virtuoso</h3>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot" style="border-color:#F59E0B">1</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">Más usuarios generan más datos</div>
+            <div class="tl-body">Cada interacción con una app (búsqueda, compra, clic) genera datos que se almacenan.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot" style="border-color:#F59E0B">2</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">La IA aprende de esos datos</div>
+            <div class="tl-body">Los algoritmos de ML se entrenan con los nuevos datos, mejorando sus predicciones.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot" style="border-color:#F59E0B">3</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">Mejor IA → mejor experiencia</div>
+            <div class="tl-body">Las recomendaciones son más precisas, el servicio más personalizado, el producto más útil.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot" style="border-color:#F59E0B">4</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">Mejor experiencia → más usuarios</div>
+            <div class="tl-body">Los usuarios satisfechos siguen usando el servicio y recomiendan a otros, generando aún más datos.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== M3S2 ===== -->
+    <div id="sec-m3s2" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#F59E0B;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);">🔗 Módulo 3</div>
+        <h2 class="sec-title">El Flujo Completo: De los Datos a la Decisión</h2>
+        <p class="sec-subtitle">Cómo una empresa convierte datos crudos en valor de negocio usando IA.</p>
+      </div>
+
+      <p class="prose">Para entender la convergencia en la práctica, sigamos el viaje completo de un dato: desde que un usuario realiza una acción hasta que una decisión inteligente se toma de forma automática.</p>
+
+      <div class="code-block">
+<span class="cm">════════════════════════════════════════════════════════</span>
+<span class="cm"> EJEMPLO: Sistema de Detección de Fraude Bancario</span>
+<span class="cm">════════════════════════════════════════════════════════</span>
+
+<span class="kw">EVENTO:</span>  Usuario en Ciudad de México compra $5,000 en electrónica
+         <span class="num">→</span> Hace 2 horas se registró un pago en Madrid, España
+
+<span class="kw">BIG DATA</span> (<span class="fn">Ingesta en tiempo real</span>):
+  <span class="str">· Historial de compras:</span>    últimas 500 transacciones
+  <span class="str">· Patrones geográficos:</span>   ubicaciones habituales
+  <span class="str">· Comportamiento horario:</span> ¿A qué hora suele comprar?
+  <span class="str">· Dispositivo usado:</span>      ¿Es su teléfono habitual?
+  <span class="str">· Red de conexión:</span>        ¿VPN? ¿IP nueva?
+
+<span class="kw">IA</span> (<span class="fn">Modelo de ML — procesamiento en <100ms</span>):
+  Compara con <span class="num">850,000</span> casos de fraude conocidos
+  Calcula: <span class="num">Riesgo = 94.7%</span>
+
+<span class="kw">DECISIÓN AUTOMÁTICA:</span>
+  <span class="str">→ Transacción bloqueada</span>
+  <span class="str">→ Notificación push al usuario</span>
+  <span class="str">→ Alerta al equipo de seguridad</span>
+  <span class="cm">  Todo en menos de 0.1 segundos</span></div>
+
+      <h3>Arquitectura Lambda: El Estándar Industrial</h3>
+      <p class="prose">Muchos sistemas de Big Data + IA usan la <strong>Arquitectura Lambda</strong>, que combina procesamiento en lotes (para precisión) con procesamiento en tiempo real (para velocidad):</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Capa</th><th>Función</th><th>Tecnología</th><th>Latencia</th></tr></thead>
+          <tbody>
+            <tr><td>Batch Layer</td><td>Procesa todo el historial, alta precisión</td><td>Hadoop, Spark Batch</td><td>Horas</td></tr>
+            <tr><td>Speed Layer</td><td>Procesa datos nuevos en tiempo real</td><td>Kafka, Spark Streaming</td><td>Milisegundos</td></tr>
+            <tr><td>Serving Layer</td><td>Combina y expone resultados</td><td>HBase, Cassandra</td><td>Consultas rápidas</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== M3S3 ===== -->
+    <div id="sec-m3s3" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#F59E0B;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);">🔗 Módulo 3</div>
+        <h2 class="sec-title">Proyectos del Mundo Real</h2>
+        <p class="sec-subtitle">Cinco casos donde IA y Big Data transformaron industrias enteras.</p>
+      </div>
+
+      <div class="card-grid">
+        <div class="concept-card" style="border-color:rgba(245,158,11,0.3)">
+          <div class="cc-icon">🌾</div>
+          <div class="cc-title">Agricultura de Precisión</div>
+          <div class="cc-body"><strong>Problema:</strong> Desperdicio de agua, fertilizantes y pesticidas.<br><strong>Solución:</strong> Sensores IoT en el campo + satélites + IA. Drones analizan salud de plantas por imagen y predicen dónde hay plagas.<br><strong>Resultado:</strong> Monsanto redujo uso de pesticidas un 90% en campos piloto. John Deere integra IA en tractores autónomos.</div>
+        </div>
+        <div class="concept-card" style="border-color:rgba(56,217,169,0.3)">
+          <div class="cc-icon">⚡</div>
+          <div class="cc-title">Redes Eléctricas Inteligentes</div>
+          <div class="cc-body"><strong>Problema:</strong> Apagones y desperdicio de energía.<br><strong>Solución:</strong> Smart Grid: millones de sensores + IA que predice demanda y balancea la red en tiempo real.<br><strong>Resultado:</strong> España redujo 30% el tiempo de apagones. La IA puede predecir fallos en transformadores antes de que ocurran.</div>
+        </div>
+        <div class="concept-card" style="border-color:rgba(91,138,240,0.3)">
+          <div class="cc-icon">🏙️</div>
+          <div class="cc-title">Ciudades Inteligentes (Smart Cities)</div>
+          <div class="cc-body"><strong>Singapur:</strong> Cámaras con visión por computadora analizan tráfico y ajustan semáforos en tiempo real. Reducción del 15% en tiempo de viaje.<br><strong>Barcelona:</strong> Sensores de basura avisan cuando los contenedores están llenos, optimizando rutas de recolección y ahorrando millones.</div>
+        </div>
+        <div class="concept-card" style="border-color:rgba(240,101,149,0.3)">
+          <div class="cc-icon">🎵</div>
+          <div class="cc-title">La Música que Escuchas</div>
+          <div class="cc-body"><strong>Spotify Discover Weekly:</strong> Analiza 30 segundos de cada canción (timbre, ritmo, armonía), compara con 4 billones de listas de reproducción y genera una playlist personalizada de 30 canciones cada lunes. El 40M de usuarios que la usa escucha en promedio 2.5 horas adicionales por semana.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== M3 QUIZ ===== -->
+    <div id="sec-m3q" class="section-hidden content-area">
+      <div class="quiz-wrap">
+        <div class="quiz-intro">
+          <div class="qi-icon">📝</div>
+          <div class="qi-title">Quiz — Módulo 3: Convergencia</div>
+          <div class="qi-sub">5 preguntas sobre la sinergia entre IA y Big Data</div>
+        </div>
+        <div id="quiz-m3"></div>
+        <button class="quiz-submit-btn" id="submit-m3" onclick="submitQuiz('m3')" disabled>Verificar respuestas</button>
+        <div id="result-m3" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- ===== M4S1 ===== -->
+    <div id="sec-m4s1" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#F06595;border-color:rgba(240,101,149,0.3);background:rgba(240,101,149,0.08);">⚖️ Módulo 4</div>
+        <h2 class="sec-title">Privacidad, Vigilancia y el Dilema del Dato</h2>
+        <p class="sec-subtitle">El precio oculto de los servicios gratuitos y el poder de la vigilancia masiva.</p>
+      </div>
+
+      <div class="callout-quote">"Si el producto es gratis, el producto eres tú." — Aforismo del mundo digital</div>
+
+      <p class="prose">La convergencia de IA y Big Data ha creado sistemas de <strong>vigilancia y perfilado sin precedentes</strong> en la historia humana. Comprender sus implicaciones es esencial para ser ciudadano digital informado.</p>
+
+      <div class="ethical-card" style="border-color:rgba(240,101,149,0.3);background:rgba(240,101,149,0.05)">
+        <div class="eth-title" style="color:#F06595">🕵️ El Perfilado de Usuarios</div>
+        <div class="eth-body">Facebook/Meta conoce: tu ubicación en todo momento, con quién hablas, qué te divierte, qué te da miedo, qué te hace comprar, tu orientación política, religiosa y sexual. Este perfil se vende a anunciantes para mostrarte exactamente lo que te hará hacer clic. Cambridge Analytica usó datos de 87 millones de perfiles de Facebook para influir en las elecciones de EE.UU. (2016) y el Brexit.</div>
+        <div class="eth-example" style="background:rgba(240,101,149,0.1);border-radius:8px;color:#F06595">📌 Caso real: Target (supermercado EEUU) predijo que una adolescente estaba embarazada basándose en su historial de compras, y le envió cupones de pañales antes de que su familia lo supiera.</div>
+      </div>
+
+      <div class="ethical-card" style="border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.05);margin-top:20px">
+        <div class="eth-title" style="color:#F59E0B">🇨🇳 El Sistema de Crédito Social de China</div>
+        <div class="eth-body">China ha implementado un sistema que asigna puntuaciones a ciudadanos y empresas basándose en su comportamiento. Las cámaras de reconocimiento facial (600 millones instaladas) conectadas a IA rastrean a las personas en tiempo real. Bajas puntuaciones resultan en: prohibición de viajar en avión o tren, exclusión de empleos públicos, nombres publicados como "deshonestos". Es el caso más avanzado de vigilancia masiva impulsada por IA y Big Data del mundo.</div>
+        <div class="eth-example" style="background:rgba(245,158,11,0.1);border-radius:8px;color:#F59E0B">⚠️ En 2019, el sistema bloqueó 23 millones de viajes en avión y 5.5 millones en tren a personas con bajas puntuaciones.</div>
+      </div>
+
+      <h3>El Marco Legal: GDPR y el Derecho al Olvido</h3>
+      <p class="prose">En respuesta a estos desafíos, la Unión Europea aprobó el <strong>GDPR (Reglamento General de Protección de Datos)</strong> en 2018, el marco legal de privacidad más riguroso del mundo:</p>
+      <div class="tag-cloud">
+        <span class="tag">✓ Derecho a saber qué datos tienen de ti</span>
+        <span class="tag">✓ Derecho a ser olvidado (borrar tus datos)</span>
+        <span class="tag">✓ Derecho a portabilidad de datos</span>
+        <span class="tag">✓ Consentimiento explícito obligatorio</span>
+        <span class="tag">✓ Multas hasta €20M o 4% de facturación global</span>
+      </div>
+    </div>
+
+    <!-- ===== M4S2 ===== -->
+    <div id="sec-m4s2" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#F06595;border-color:rgba(240,101,149,0.3);background:rgba(240,101,149,0.08);">⚖️ Módulo 4</div>
+        <h2 class="sec-title">Sesgos Algorítmicos y la Caja Negra</h2>
+        <p class="sec-subtitle">Cuando la IA hereda y amplifica las injusticias humanas.</p>
+      </div>
+
+      <p class="prose">Uno de los problemas más graves de la IA y el Big Data es el <strong>sesgo algorítmico</strong>: cuando los modelos toman decisiones injustas o discriminatorias porque fueron entrenados con datos que reflejan desigualdades históricas o sesgos humanos.</p>
+
+      <h3>Casos Reales de Sesgo</h3>
+      <div class="card-grid">
+        <div class="concept-card" style="border-color:rgba(240,101,149,0.3)">
+          <div class="cc-icon">⚖️</div>
+          <div class="cc-title">COMPAS — Justicia Penal (EE.UU.)</div>
+          <div class="cc-body">Sistema de IA usado en tribunales para predecir reincidencia criminal. ProPublica (2016) demostró que el sistema marcaba a personas afroamericanas como "alto riesgo" con el doble de frecuencia que a personas blancas, incluso con historiales similares. Decisiones judiciales afectadas por un algoritmo sesgado.</div>
+        </div>
+        <div class="concept-card" style="border-color:rgba(245,158,11,0.3)">
+          <div class="cc-icon">💼</div>
+          <div class="cc-title">Amazon Recruiting (2018)</div>
+          <div class="cc-body">Amazon desarrolló una IA para filtrar currículums. El sistema aprendió de CVs históricos (mayoritariamente masculinos) y comenzó a penalizar CVs que contenían la palabra "mujeres" (ej. "capitana del equipo femenino"). Amazon desechó el sistema al descubrirlo.</div>
+        </div>
+        <div class="concept-card" style="border-color:rgba(91,138,240,0.3)">
+          <div class="cc-icon">📸</div>
+          <div class="cc-title">Reconocimiento Facial y Raza</div>
+          <div class="cc-body">MIT Media Lab (2018): los sistemas de reconocimiento facial de IBM, Microsoft y Face++ tenían una tasa de error del 0.8% para hombres blancos... y del 34.7% para mujeres de piel oscura. Los datos de entrenamiento estaban sesgados hacia poblaciones europeas.</div>
+        </div>
+        <div class="concept-card" style="border-color:rgba(167,139,250,0.3)">
+          <div class="cc-icon">🏦</div>
+          <div class="cc-title">Crédito Financiero</div>
+          <div class="cc-body">Algoritmos de scoring crediticio pueden replicar discriminación histórica: si ciertos barrios (correlacionados con raza/etnia) históricamente tuvieron menos acceso a crédito, el modelo aprende a negarles crédito también, perpetuando la desigualdad.</div>
+        </div>
+      </div>
+
+      <div class="info-box pink">
+        <div class="box-label">🔑 Concepto Clave: "La Caja Negra"</div>
+        Las redes neuronales profundas son inherentemente <strong>opacas</strong>: ni sus creadores pueden explicar exactamente por qué tomaron cierta decisión. Un banco puede rechazar un préstamo sin poder explicar el motivo. La nueva rama de <strong>IA Explicable (XAI)</strong> busca resolver este problema, haciendo los modelos interpretables.
+      </div>
+    </div>
+
+    <!-- ===== M4S3 ===== -->
+    <div id="sec-m4s3" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#F06595;border-color:rgba(240,101,149,0.3);background:rgba(240,101,149,0.08);">⚖️ Módulo 4</div>
+        <h2 class="sec-title">Impacto Laboral y el Futuro</h2>
+        <p class="sec-subtitle">¿La IA nos quitará el trabajo o creará nuevos empleos?</p>
+      </div>
+
+      <p class="prose">El impacto de la IA y el Big Data en el mercado laboral es uno de los temas más debatidos de nuestro tiempo. La evidencia histórica de automatizaciones anteriores (revolución industrial, computadoras) sugiere que la tecnología destruye ciertos empleos pero crea otros nuevos — aunque la transición puede ser dolorosa.</p>
+
+      <h3>¿Qué empleos están en riesgo?</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Alto Riesgo de Automatización</th><th>Bajo Riesgo</th><th>Empleos que Crea la IA</th></tr></thead>
+          <tbody>
+            <tr><td>Cajeros de banco/supermercado</td><td>Psicólogos y terapeutas</td><td>Ingenieros de ML/IA</td></tr>
+            <tr><td>Operadores de call center</td><td>Docentes y educadores</td><td>Científicos de datos</td></tr>
+            <tr><td>Conductores (a largo plazo)</td><td>Enfermeras y cuidadores</td><td>Especialistas en ética de IA</td></tr>
+            <tr><td>Contadores básicos</td><td>Artistas y creativos</td><td>Ingenieros de prompts</td></tr>
+            <tr><td>Traductores básicos</td><td>Plomeros y electricistas</td><td>Entrenadores de modelos IA</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>El Horizonte: ¿Qué viene?</h3>
+      <div class="card-grid">
+        <div class="concept-card">
+          <div class="cc-icon">🧬</div>
+          <div class="cc-title">IA en Medicina Personalizada</div>
+          <div class="cc-body">Análisis del genoma completo de cada paciente + historial clínico + Big Data de millones de casos = tratamientos personalizados para cada individuo. DeepMind predice con 10 años de anticipación el riesgo de enfermedades renales.</div>
+        </div>
+        <div class="concept-card">
+          <div class="cc-icon">🌍</div>
+          <div class="cc-title">Cambio Climático</div>
+          <div class="cc-body">Modelos de IA analizan petabytes de datos de satélites, océanos y atmósfera para predecir el clima con mayor precisión. Google DeepMind redujo el consumo de energía en sus centros de datos un 40% usando IA para optimizar la refrigeración.</div>
+        </div>
+        <div class="concept-card">
+          <div class="cc-icon">⚖️</div>
+          <div class="cc-title">Regulación y Gobernanza</div>
+          <div class="cc-body">La UE aprobó el <strong>AI Act</strong> (2024): primera ley integral del mundo para regular la IA. Clasifica los sistemas por riesgo (inaceptable, alto, bajo) y establece requisitos de transparencia, auditabilidad y responsabilidad.</div>
+        </div>
+        <div class="concept-card">
+          <div class="cc-icon">🔮</div>
+          <div class="cc-title">Hacia la AGI</div>
+          <div class="cc-body">OpenAI, DeepMind, Anthropic y Meta invierten miles de millones en AGI. Algunos investigadores creen que podría llegarnos antes de 2030. El debate sobre seguridad de la IA (AI Safety) es hoy uno de los más urgentes de la humanidad.</div>
+        </div>
+      </div>
+
+      <div class="info-box green">
+        <div class="box-label">💬 Reflexión final para exposición</div>
+        La pregunta no es <strong>"¿nos quitará trabajo la IA?"</strong> sino <strong>"¿cómo nos preparamos para un mundo donde la IA es ubiqua?"</strong> Las habilidades que más valdrán: pensamiento crítico, creatividad, inteligencia emocional, y saber trabajar <em>con</em> la IA (no contra ella).
+      </div>
+    </div>
+
+    <!-- ===== M4 QUIZ ===== -->
+    <div id="sec-m4q" class="section-hidden content-area">
+      <div class="quiz-wrap">
+        <div class="quiz-intro">
+          <div class="qi-icon">📝</div>
+          <div class="qi-title">Quiz — Módulo 4: Ética y Futuro</div>
+          <div class="qi-sub">5 preguntas sobre los desafíos éticos y el impacto social</div>
+        </div>
+        <div id="quiz-m4"></div>
+        <button class="quiz-submit-btn" id="submit-m4" onclick="submitQuiz('m4')" disabled>Verificar respuestas</button>
+        <div id="result-m4" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- ===== FINAL ===== -->
+    <div id="sec-final" class="section-hidden content-area">
+      <div class="sec-header">
+        <div class="sec-module-tag" style="color:#A78BFA;border-color:rgba(167,139,250,0.3);background:rgba(167,139,250,0.08);">🏆 Evaluación Final</div>
+        <h2 class="sec-title">Examen Final</h2>
+        <p class="sec-subtitle">20 preguntas que cubren todos los módulos del curso.</p>
+      </div>
+      <div id="quiz-final"></div>
+      <button class="quiz-submit-btn" id="submit-final" onclick="submitQuiz('final')" disabled style="background:linear-gradient(135deg,#A78BFA,#7C3AED)">Enviar Examen Final</button>
+      <div id="result-final" style="display:none"></div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+// ========================================
+// QUIZ DATA
+// ========================================
+const quizData = {
+  m1: [
+    { q: "¿Qué demostró el Test de Turing propuesto en 1950?", opts: ["Que las máquinas pueden calcular más rápido que humanos","Un método para evaluar si una máquina puede exhibir comportamiento inteligente indistinguible del humano","Que la IA es imposible de lograr","Que las computadoras pueden almacenar más memoria que el cerebro"], ans: 1, exp: "El Test de Turing propone una prueba conversacional: si un humano no puede distinguir si habla con una máquina o con un humano, la máquina se considera 'inteligente'." },
+    { q: "¿Cuál es la diferencia fundamental entre la IA Débil (ANI) y la IA General (AGI)?", opts: ["La ANI es más poderosa que la AGI","La ANI está especializada en tareas específicas; la AGI puede realizar cualquier tarea intelectual","La AGI ya existe en forma de ChatGPT","La ANI usa más datos que la AGI"], ans: 1, exp: "La ANI (lo que existe hoy) solo hace una cosa bien. La AGI (que no existe aún) podría aprender y realizar cualquier tarea cognitiva como un humano." },
+    { q: "En el aprendizaje supervisado, ¿qué significa que los datos estén 'etiquetados'?", opts: ["Que tienen una marca de copyright","Que cada ejemplo de entrenamiento tiene la respuesta correcta asociada","Que están ordenados alfabéticamente","Que están comprimidos para ahorrar espacio"], ans: 1, exp: "En aprendizaje supervisado, cada dato de entrenamiento viene con su respuesta correcta (etiqueta). Por ejemplo: imagen de gato → etiqueta 'gato'." },
+    { q: "¿Qué logró AlphaFold 2 de DeepMind en 2020?", opts: ["Vencer al campeón mundial de ajedrez","Resolver el problema del plegamiento de proteínas","Crear el primer robot humanoide","Diseñar el primer chip de IA"] , ans: 1, exp: "AlphaFold 2 resolvió uno de los mayores desafíos de la biología en 50 años: predecir cómo se pliegan las proteínas a partir de su secuencia, acelerando el desarrollo de medicamentos." },
+    { q: "¿Cuál de estos sistemas usa Aprendizaje por Refuerzo?", opts: ["Un filtro de spam de email","AlphaGo para jugar Go","Google Translate","El reconocimiento facial del iPhone"], ans: 1, exp: "AlphaGo usa aprendizaje por refuerzo: aprende jugando millones de partidas contra sí mismo, recibiendo recompensas cuando gana y penalizaciones cuando pierde." }
+  ],
+  m2: [
+    { q: "¿Qué distingue al Big Data de los datos tradicionales, además del volumen?", opts: ["Solo el tamaño del archivo","La velocidad de generación, la variedad de formatos y la necesidad de tecnologías especializadas","Que siempre está en la nube","Que solo lo usan grandes empresas"], ans: 1, exp: "Big Data se caracteriza por las 5 V's: Volumen, Velocidad, Variedad, Veracidad y Valor. No es solo 'muchos datos', sino datos que requieren tecnologías especiales por su complejidad." },
+    { q: "¿Por qué el precio del almacenamiento digital es importante para el Big Data?", opts: ["No es relevante","Bajó de $300,000/GB en 1980 a $0.03/GB hoy, haciendo viable almacenar datos masivos","Subió, lo que impulsa la innovación","Solo importa para empresas tecnológicas"], ans: 1, exp: "La caída dramática del costo de almacenamiento (de ~$300K/GB en 1980 a centavos hoy) fue uno de los factores clave que hizo posible el Big Data a escala global." },
+    { q: "¿Qué hace Apache Kafka en un sistema de Big Data?", opts: ["Almacena datos históricos en HDFS","Ingesta y mueve millones de eventos por segundo en tiempo real","Visualiza datos en dashboards","Entrena modelos de Machine Learning"], ans: 1, exp: "Apache Kafka es un sistema de mensajería distribuida para ingesta de datos en tiempo real. Puede procesar millones de eventos por segundo, como clics, transacciones y logs." },
+    { q: "¿Qué significa que el 80% de los datos del mundo sean 'no estructurados'?", opts: ["Que están desordenados","Que no caben en filas y columnas de una base de datos tradicional (textos, imágenes, audio, video)","Que son datos erróneos","Que no tienen valor"], ans: 1, exp: "Los datos no estructurados (textos, imágenes, audio, video) no tienen un formato fijo de filas/columnas. Representan ~80% de todos los datos y requieren IA para analizarlos." },
+    { q: "Amazon predice qué vas a comprar antes de que lo hagas. ¿Qué V del Big Data describe mejor esta capacidad?", opts: ["Volumen","Velocidad","Variedad","Valor"], ans: 3, exp: "El 'envío anticipatorio' de Amazon es el máximo exponente de la V de Valor: transformar datos de comportamiento en una predicción que genera ingresos reales y reduce tiempos de entrega." }
+  ],
+  m3: [
+    { q: "¿Por qué se dice que IA y Big Data tienen una relación 'simbiótica'?", opts: ["Porque ambas tecnologías fueron creadas al mismo tiempo","Porque cada una necesita a la otra para funcionar a escala: la IA necesita datos, el Big Data necesita IA para analizarse","Porque comparten el mismo lenguaje de programación","Porque las mismas empresas desarrollan ambas"], ans: 1, exp: "Sin Big Data, la IA no tiene suficientes datos para entrenarse y ser precisa. Sin IA, el Big Data es un repositorio inutilizable. Son mutuamente dependientes." },
+    { q: "En el sistema de detección de fraude bancario, ¿en qué debe procesarse la transacción para ser útil?", opts: ["En 24 horas","En 1 hora","En menos de 100 milisegundos","En 1 semana"], ans: 2, exp: "La detección de fraude debe operar en tiempo real (milisegundos) para bloquear transacciones fraudulentas antes de que se completen. Esta es la V de Velocidad aplicada con IA." },
+    { q: "¿Qué es la Arquitectura Lambda en Big Data?", opts: ["Un lenguaje de programación para IA","Una arquitectura que combina procesamiento en lotes (precisión histórica) con procesamiento en tiempo real (baja latencia)","Un tipo de red neuronal profunda","Un sistema de almacenamiento de datos"], ans: 1, exp: "La Arquitectura Lambda tiene tres capas: Batch (analiza todo el historial con precisión), Speed (datos nuevos en tiempo real), y Serving (combina ambas para respuestas rápidas)." },
+    { q: "¿Cómo usa Spotify el Big Data y la IA para Discover Weekly?", opts: ["Solo analiza el nombre de las canciones que escuchas","Analiza características de audio de cada canción + comportamiento de 4 billones de listas + tus preferencias para crear tu playlist personalizada","Simplemente muestra canciones populares en tu país","Copia listas de reproducción de usuarios similares a ti"], ans: 1, exp: "Spotify analiza timbre, ritmo, armonía de cada canción (ML), compara con miles de millones de playlists (Big Data) y genera recomendaciones ultra-personalizadas cada lunes." },
+    { q: "¿Qué representa el 'ciclo virtuoso' de IA + Big Data?", opts: ["Un proceso donde se gastan más recursos computacionales continuamente","El ciclo donde más usuarios generan más datos → mejor IA → mejor experiencia → más usuarios","Un sistema que se vuelve más caro con el tiempo","El ciclo de actualización de hardware de servidores"], ans: 1, exp: "El ciclo virtuoso: más usuarios → más datos → mejor IA → mejor producto → más usuarios. Es la razón por la que empresas como Google, Amazon y Facebook tienen ventajas competitivas enormes." }
+  ],
+  m4: [
+    { q: "¿Qué demostró Cambridge Analytica sobre los riesgos del Big Data?", opts: ["Que los datos pueden mejorar campañas de salud pública","Que los perfiles de datos personales pueden usarse para influir en elecciones democráticas a escala masiva","Que el Big Data solo sirve para publicidad comercial","Que los datos de Facebook no son confiables"], ans: 1, exp: "Cambridge Analytica usó datos de 87 millones de perfiles de Facebook para crear perfiles psicológicos y mostrar contenido político personalizado, influyendo en las elecciones de EE.UU. 2016 y el Brexit." },
+    { q: "¿Cuál es el problema principal del algoritmo COMPAS usado en tribunales de EE.UU.?", opts: ["Era demasiado caro","Mostraba sesgo racial: marcaba a personas afroamericanas como 'alto riesgo' con el doble de frecuencia que a personas blancas","Era demasiado lento para procesar casos","Solo funcionaba en ciertos estados"], ans: 1, exp: "COMPAS es un ejemplo clásico de sesgo algorítmico: aprendió de datos históricos que reflejaban desigualdades del sistema judicial, y las amplificó en sus predicciones futuras." },
+    { q: "¿Qué garantía otorga el GDPR que no existía antes de 2018?", opts: ["Que internet sea gratuito","El 'derecho al olvido': puedes pedir que una empresa elimine todos tus datos personales","Que las empresas paguen a los usuarios por sus datos","Que la IA no pueda procesar datos personales"], ans: 1, exp: "El GDPR (UE, 2018) introdujo derechos fundamentales: saber qué datos tienen de ti, pedir su eliminación (derecho al olvido), y recibir tus datos en formato portátil. Multas de hasta €20M." },
+    { q: "¿Qué característica hace que las redes neuronales profundas sean una 'caja negra'?", opts: ["Que están pintadas de negro","Que sus procesos internos son tan complejos que ni sus creadores pueden explicar exactamente por qué tomaron una decisión específica","Que solo funcionan en hardware negro especializado","Que los datos de entrada son confidenciales"], ans: 1, exp: "Las redes neuronales profundas tienen millones/billones de parámetros interactuando. No existe una explicación causal simple de por qué producen un resultado. Esto es el problema de 'explicabilidad' que aborda la IA Explicable (XAI)." },
+    { q: "¿Cuál de estas habilidades humanas tiene el MENOR riesgo de ser automatizada por la IA?", opts: ["Captura de datos en formularios","Traducción básica de textos","Inteligencia emocional y cuidado de personas","Análisis de hojas de cálculo"], ans: 2, exp: "La inteligencia emocional, el cuidado genuino, la empatía y la conexión humana son las habilidades más difíciles de replicar para la IA. Los empleos que requieren estas capacidades tienen el menor riesgo de automatización." }
+  ]
+};
+
+// Generate final exam (20 questions from all modules)
+const allQ = [];
+Object.values(quizData).forEach(qs => qs.forEach(q => allQ.push(q)));
+quizData.final = allQ;
+
+// ========================================
+// STATE
+// ========================================
+const state = {
+  current: 'home',
+  answers: {},
+  submitted: {},
+  visited: new Set(['home'])
+};
+
+const ORDER = ['home','m1s1','m1s2','m1s3','m1s4','m1s5','m1q','m2s1','m2s2','m2s3','m2s4','m2q','m3s1','m3s2','m3s3','m3q','m4s1','m4s2','m4s3','m4q','final'];
+
+// ========================================
+// NAVIGATION
+// ========================================
+function navigate(sec) {
+  document.getElementById('sec-' + state.current).className = 'section-hidden';
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  
+  state.current = sec;
+  state.visited.add(sec);
+  
+  const el = document.getElementById('sec-' + sec);
+  el.className = sec === 'home' ? 'section-active' : 'section-active content-area fade-in';
+  el.scrollIntoView ? document.getElementById('mainArea').scrollTop = 0 : null;
+  
+  const navEl = document.querySelector(`[data-sec="${sec}"]`);
+  if (navEl) { navEl.classList.add('active'); navEl.classList.add('done'); }
+  
+  updateBreadcrumb(sec);
+  updateProgress();
+  updateNavButtons();
+  
+  // Init quizzes
+  if (sec.endsWith('q') || sec === 'final') initQuiz(sec.replace('sec-',''));
+  
+  closeSidebar();
+}
+
+function updateBreadcrumb(sec) {
+  const map = {
+    home:'Inicio', m1s1:'Módulo 1 → ¿Qué es la IA?', m1s2:'Módulo 1 → Historia', m1s3:'Módulo 1 → Tipos de IA', m1s4:'Módulo 1 → Machine Learning', m1s5:'Módulo 1 → Aplicaciones', m1q:'Módulo 1 → Quiz',
+    m2s1:'Módulo 2 → ¿Qué es Big Data?', m2s2:'Módulo 2 → Las 5 V\'s', m2s3:'Módulo 2 → Arquitectura', m2s4:'Módulo 2 → Casos Reales', m2q:'Módulo 2 → Quiz',
+    m3s1:'Módulo 3 → Sinergia', m3s2:'Módulo 3 → Flujo de Datos', m3s3:'Módulo 3 → Proyectos Reales', m3q:'Módulo 3 → Quiz',
+    m4s1:'Módulo 4 → Privacidad', m4s2:'Módulo 4 → Sesgos', m4s3:'Módulo 4 → Impacto Laboral', m4q:'Módulo 4 → Quiz',
+    final:'🏆 Examen Final'
+  };
+  document.getElementById('breadcrumb').innerHTML = map[sec] || sec;
+}
+
+function updateProgress() {
+  const pct = Math.round((state.visited.size / ORDER.length) * 100);
+  document.getElementById('globalBar').style.width = pct + '%';
+  document.getElementById('globalPct').textContent = pct + '%';
+}
+
+function updateNavButtons() {
+  const idx = ORDER.indexOf(state.current);
+  document.getElementById('btnPrev').style.opacity = idx <= 0 ? '0.3' : '1';
+  document.getElementById('btnPrev').disabled = idx <= 0;
+  const isLast = idx >= ORDER.length - 1;
+  document.getElementById('btnNext').textContent = isLast ? '✓ Completado' : 'Siguiente →';
+  document.getElementById('btnNext').disabled = isLast;
+}
+
+function navNext() {
+  const idx = ORDER.indexOf(state.current);
+  if (idx < ORDER.length - 1) navigate(ORDER[idx + 1]);
+}
+
+function navPrev() {
+  const idx = ORDER.indexOf(state.current);
+  if (idx > 0) navigate(ORDER[idx - 1]);
+}
+
+// ========================================
+// QUIZ ENGINE
+// ========================================
+function initQuiz(qid) {
+  const id = qid === 'final' ? 'final' : qid;
+  const container = document.getElementById('quiz-' + id);
+  if (!container || container.dataset.initialized) return;
+  container.dataset.initialized = 'true';
+  
+  const questions = quizData[id] || [];
+  
+  questions.forEach((q, i) => {
+    const key = `${id}-${i}`;
+    const div = document.createElement('div');
+    div.className = 'question-card';
+    div.id = `qcard-${key}`;
+    div.innerHTML = `
+      <div class="q-num">Pregunta ${i + 1} de ${questions.length}</div>
+      <div class="q-text">${q.q}</div>
+      ${q.opts.map((opt, j) => `
+        <button class="option-btn" id="opt-${key}-${j}" onclick="selectAnswer('${key}', ${j}, ${q.ans}, '${id}')">
+          <span class="opt-letter">${String.fromCharCode(65+j)}</span>
+          ${opt}
+        </button>`).join('')}
+      <div class="explanation" id="exp-${key}" style="display:none"></div>`;
+    container.appendChild(div);
+  });
+}
+
+function selectAnswer(key, selected, correct, qid) {
+  if (state.submitted[qid]) return;
+  const parts = key.split('-');
+  const qIdx = parseInt(parts[parts.length-1]);
+  const id = parts.slice(0,-1).join('-');
+  
+  // Clear previous selection for this question
+  const questions = quizData[id] || [];
+  questions[qIdx].opts.forEach((_, j) => {
+    const btn = document.getElementById(`opt-${key}-${j}`);
+    if (btn) btn.classList.remove('selected');
+  });
+  
+  const btn = document.getElementById(`opt-${key}-${selected}`);
+  if (btn) btn.classList.add('selected');
+  
+  if (!state.answers[id]) state.answers[id] = {};
+  state.answers[id][qIdx] = selected;
+  
+  // Enable submit if all answered
+  const questions2 = quizData[id] || [];
+  const answered = Object.keys(state.answers[id] || {}).length;
+  const submitBtn = document.getElementById('submit-' + id);
+  if (submitBtn) submitBtn.disabled = answered < questions2.length;
+}
+
+function submitQuiz(id) {
+  if (state.submitted[id]) return;
+  state.submitted[id] = true;
+  
+  const questions = quizData[id] || [];
+  let correct = 0;
+  
+  questions.forEach((q, i) => {
+    const key = `${id}-${i}`;
+    const selected = (state.answers[id] || {})[i];
+    const isCorrect = selected === q.ans;
+    if (isCorrect) correct++;
+    
+    const card = document.getElementById(`qcard-${key}`);
+    if (card) card.className = `question-card ${isCorrect ? 'correct' : 'incorrect'}`;
+    
+    // Style options
+    q.opts.forEach((_, j) => {
+      const btn = document.getElementById(`opt-${key}-${j}`);
+      if (!btn) return;
+      btn.disabled = true;
+      btn.classList.remove('selected');
+      if (j === q.ans) btn.classList.add('correct-ans');
+      else if (j === selected && !isCorrect) btn.classList.add('wrong-ans');
+    });
+    
+    // Show explanation
+    const exp = document.getElementById(`exp-${key}`);
+    if (exp) {
+      exp.style.display = 'block';
+      exp.className = `explanation ${isCorrect ? 'correct' : 'incorrect'}`;
+      exp.innerHTML = `${isCorrect ? '✅' : '❌'} ${q.exp}`;
+    }
+  });
+  
+  // Hide submit, show result
+  const submitBtn = document.getElementById('submit-' + id);
+  if (submitBtn) submitBtn.style.display = 'none';
+  
+  const pct = Math.round((correct / questions.length) * 100);
+  const emoji = pct >= 80 ? '🏆' : pct >= 60 ? '🎯' : '📚';
+  const msg = pct >= 80 ? '¡Excelente dominio del tema!' : pct >= 60 ? 'Buen trabajo. Repasa las explicaciones donde fallaste.' : 'Sigue estudiando, ¡tú puedes!';
+  
+  const resultEl = document.getElementById('result-' + id);
+  if (resultEl) {
+    resultEl.style.display = 'block';
+    
+    if (id === 'final') {
+      resultEl.innerHTML = `
+        <div class="final-score-card">
+          <div class="fs-emoji">${emoji}</div>
+          <div class="fs-score">${correct}</div>
+          <div class="fs-of">de ${questions.length} correctas</div>
+          <div class="fs-pct">${pct}% de calificación</div>
+          <div class="fs-msg">${msg}</div>
+          <div class="cert">
+            <div class="cert-title">Certificado de Finalización</div>
+            <div class="cert-name">Curso de IA & Big Data</div>
+            <div class="cert-body">Has completado exitosamente el curso completo de Inteligencia Artificial y Big Data, incluyendo fundamentos, tecnologías, convergencia y ética.</div>
+            <div class="cert-score">${pct}%</div>
+          </div>
+        </div>`;
+    } else {
+      resultEl.innerHTML = `
+        <div class="quiz-result">
+          <div style="font-size:48px;margin-bottom:12px">${emoji}</div>
+          <div class="qr-score">${correct}/${questions.length}</div>
+          <div class="qr-label">${pct}% correcto — ${msg}</div>
+          <button class="btn btn-primary" style="margin-top:16px" onclick="navNext()">Continuar →</button>
+        </div>`;
+    }
+  }
+}
+
+// ========================================
+// SIDEBAR MOBILE
+// ========================================
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ========================================
+// INIT
+// ========================================
+navigate('home');
+</script>
+</body>
+</html>
